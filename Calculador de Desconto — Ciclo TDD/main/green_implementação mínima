@@ -1,0 +1,52 @@
+import unittest
+
+
+# Implementação mínima para fazer os testes passarem na fase Green
+# Mudança: agora a classe DiscountCalculator foi criada com o método apply().
+class DiscountCalculator:
+
+    def __init__(self, policy, amount=0):
+        # Guarda o tipo de desconto e o valor do desconto
+        self.policy = policy
+        self.amount = amount
+
+    def apply(self, value):
+        # Sem desconto: retorna o valor original
+        if self.policy == 'none':
+            return value
+
+        # Desconto percentual: calcula a porcentagem sobre o valor
+        elif self.policy == 'percentage':
+            return value * (1 - self.amount / 100)
+
+        # Cupom: subtrai o desconto e não deixa ficar negativo
+        elif self.policy == 'coupon':
+            return max(0, value - self.amount)
+
+
+# Testes iguais aos da fase Red
+class TestDiscountCalculator(unittest.TestCase):
+
+    def test_no_discount(self):
+        # Testa se o valor continua igual quando não há desconto
+        calc = DiscountCalculator('none')
+        self.assertEqual(calc.apply(100.0), 100.0)
+
+    def test_percentage_discount(self):
+        # Testa desconto de 10%, esperando 90.0
+        calc = DiscountCalculator('percentage', 10)
+        self.assertEqual(calc.apply(100.0), 90.0)
+
+    def test_coupon_discount(self):
+        # Testa cupom de 20, esperando 80.0
+        calc = DiscountCalculator('coupon', 20)
+        self.assertEqual(calc.apply(100.0), 80.0)
+
+    def test_coupon_discount_never_negative(self):
+        # Testa cupom maior que o valor, esperando 0.0
+        calc = DiscountCalculator('coupon', 150)
+        self.assertEqual(calc.apply(100.0), 0.0)
+
+
+# Executa os testes
+unittest.main(argv=[''], verbosity=2, exit=False)
